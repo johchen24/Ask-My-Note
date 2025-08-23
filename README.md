@@ -1,3 +1,5 @@
+A Lightweight AI-Powered Note-Summarization App Buddy
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
