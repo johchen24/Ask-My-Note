@@ -9,6 +9,7 @@ import { useTransition } from "react";
 import { Loader2 } from "lucide-react";
 import { Button } from "./ui/button";
 import Link from "next/link";
+import { loginAction, signUpAction } from "@/actions/users";
 
 type AuthFormProps = {
     type: 'login' | 'signup'
@@ -21,8 +22,27 @@ function AuthForm({ type }: AuthFormProps) {
     const [isPending, startTransition] = useTransition();
 
     const handleSubmit = (formData: FormData) => {
-        console.log("submitted");
+        startTransition(async () => {
+            const email = formData.get('email') as string;
+            const password = formData.get('password') as string;
+
+            let errorMessage;
+            if (isLogin) {
+                errorMessage = (await loginAction(email, password)).errorMessage;
+            } else {
+                errorMessage = (await signUpAction(email, password)).errorMessage;
+            }
+    
+            if (!errorMessage) {
+                router.replace(`/?whatToast=${type}`);
+            } else {
+                toast.error("Error", {
+                    description: errorMessage,
+                });
+            }
+        })
     }
+
     return (
         <form action={handleSubmit}>
             <CardContent className="grid gap-4 w-full items-center">
