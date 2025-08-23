@@ -4,9 +4,10 @@ import { shadow } from '@/styles/utils'
 import { Button } from './ui/button'
 import DarkModeToggle from './DarkModeToggle'
 import LogoutButton from './LogoutButton'
+import { getUser } from '@/utils/supabase/server'
 
-function Header() {
-  const user = 1;
+async function Header() {
+  const user = await getUser();
   return (
     <header className="relative flex h-24 w-full items-center justify-between bg-popover px-3 sm:px-8"
     style={{

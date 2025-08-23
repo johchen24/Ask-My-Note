@@ -34,6 +34,9 @@ function AuthForm({ type }: AuthFormProps) {
             }
     
             if (!errorMessage) {
+                toast.success("Success", {
+                    description: isLogin ? "You are now logged in" : "You are now signed up",
+                });
                 router.replace(`/?whatToast=${type}`);
             } else {
                 toast.error("Error", {
