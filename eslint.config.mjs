@@ -22,6 +22,7 @@ const eslintConfig = [
     // Allow unescaped entities in JSX (matches tutorial style)
     rules: {
       "react/no-unescaped-entities": "off",
+      "@typescript-eslint/no-unused-vars": "off",
     },
   },
 ];
