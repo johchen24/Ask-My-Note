@@ -10,8 +10,12 @@ import {
 } from "@/components/ui/dialog"
 import { User } from "@supabase/supabase-js";
 import { Button } from "./ui/button"; 
-import { useState } from "react";
+import { useState, useTransition, useRef, Fragment } from "react";
 import { useRouter } from "next/navigation";
+import { Textarea } from "./ui/textarea";
+import { ArrowUpIcon } from "lucide-react";
+import { askAIAction } from "@/actions/notes";
+import "@/styles/ai-response.css";
 
 type Props = {
     user: User | null;
@@ -20,6 +24,13 @@ type Props = {
 function AskAIButton({user}: Props) {
   const router = useRouter();
   const [opened, setOpened] = useState(false);
+  const [questionText, setQuestionText] = useState("");
+  const [questions, setQuestions] = useState<string[]>([]);
+  const [responses, setResponses] = useState<string[]>([]);
+  const [isPending, startTransition] = useTransition();
+
+  const contentRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
 
   const handleOpenChange = (isOpen: boolean) => {
@@ -27,23 +38,68 @@ function AskAIButton({user}: Props) {
       router.push("/login");
     } else {
       if (isOpen) {
-        
+        setQuestions([]);
+        setResponses([]);
+        setQuestionText("");
       }
+      setOpened(isOpen);
     }
   }
+
+  const handleInput = () => {
+    const textarea = textareaRef.current;
+    if (!textarea) return;
+
+    textarea.style.height = "auto";
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  };
+
+  const handleClickInput = () => {
+    textareaRef.current?.focus();
+  };
+
+  const handleSubmit = () => {
+    if (questionText.trim() === "") return;
+
+    const newQuestions = [...questions, questionText];
+    setQuestions(newQuestions);
+    setQuestionText("");
+    setTimeout(scrollToBottom, 100);
+
+    startTransition(async () => {
+      const response = await askAIAction(newQuestions, responses);
+      setResponses((prev) => [...prev, response]);
+
+      setTimeout(scrollToBottom, 100);
+    })
+
+
+  }
+
+  const scrollToBottom = () => {
+    contentRef.current?.scrollTo({
+      top: contentRef.current?.scrollHeight,
+      behavior: "smooth",
+    });
+  };
+  
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSubmit();
+    }
+  };
+  
   return (
     <Dialog open={opened} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button variant="secondary">Ask AI</Button>
       </DialogTrigger>
-      <DialogContent
-        className="custom-scrollbar flex h-[85vh] max-w-4xl flex-col overflow-y-auto"
-        ref={contentRef}
-      >
+      <DialogContent className="custom-scrollbar flex h-[85vh] max-w-4xl flex-col overflow-y-auto" ref={contentRef}>
         <DialogHeader>
           <DialogTitle>Ask AI About Your Notes</DialogTitle>
           <DialogDescription>
-            Out AI can answer questions about all of your notes
+            What do you want to know about your ideas?
           </DialogDescription>
         </DialogHeader>
 
@@ -55,7 +111,7 @@ function AskAIButton({user}: Props) {
               </p>
               {responses[index] && (
                 <p
-                  className="bot-response text-muted-foreground text-sm"
+                  className="ai-response text-muted-foreground text-sm"
                   dangerouslySetInnerHTML={{ __html: responses[index] }}
                 />
               )}
@@ -64,13 +120,10 @@ function AskAIButton({user}: Props) {
           {isPending && <p className="animate-pulse text-sm">Thinking...</p>}
         </div>
 
-        <div
-          className="mt-auto flex cursor-text flex-col rounded-lg border p-4"
-          onClick={handleClickInput}
-        >
+        <div className="mt-auto flex cursor-text flex-col rounded-lg border p-4" onClick={handleClickInput}>
           <Textarea
             ref={textareaRef}
-            placeholder="Ask me anything about your notes..."
+            placeholder="What do you want to know..."
             className="placeholder:text-muted-foreground resize-none rounded-none border-none bg-transparent p-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0"
             style={{
               minHeight: "0",
