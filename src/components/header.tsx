@@ -5,6 +5,7 @@ import { Button } from './ui/button'
 import DarkModeToggle from './DarkModeToggle'
 import LogoutButton from './LogoutButton'
 import { getUser } from '@/utils/supabase/server'
+import { SidebarTrigger } from './ui/sidebar'
 
 async function Header() {
   const user = await getUser();
@@ -14,6 +15,7 @@ async function Header() {
       boxShadow: shadow
     }}
     >
+        <SidebarTrigger className="absolute left-1 top-1"/>
         <Link href="/" className="flex items-end gap-2">
             <Image src="/NoteBuddy-transparent.png" alt="logo" width={60} height={60} className="rounded-full" priority/>
             <h1 className="flex flex-col pb-1 text-2xl font-bold leading-6">

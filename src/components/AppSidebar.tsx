@@ -20,7 +20,7 @@ async function AppSidebar() {
                 authorId: user.id
             },
             orderBy: {
-                createdAt: "desc"
+                updatedAt: "desc"
             }
         })
     }
