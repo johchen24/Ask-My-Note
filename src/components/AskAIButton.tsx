@@ -11,15 +11,28 @@ import {
 import { User } from "@supabase/supabase-js";
 import { Button } from "./ui/button"; 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 type Props = {
     user: User | null;
 }
 
 function AskAIButton({user}: Props) {
+  const router = useRouter();
   const [opened, setOpened] = useState(false);
+
+
+  const handleOpenChange = (isOpen: boolean) => {
+    if (!user) {
+      router.push("/login");
+    } else {
+      if (isOpen) {
+        
+      }
+    }
+  }
   return (
-    <Dialog open={open} onOpenChange={handleOnOpenChange}>
+    <Dialog open={opened} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button variant="secondary">Ask AI</Button>
       </DialogTrigger>

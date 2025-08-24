@@ -2,6 +2,8 @@ A Lightweight AI-Powered Note-Summarization App Buddy
 
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+> Powered by Next.js, shadcn/ui, Prisma ORM, Supabase, and OpenAI.
+
 ## Getting Started
 
 First, run the development server:
